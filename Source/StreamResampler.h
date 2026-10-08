@@ -65,7 +65,9 @@ public:
         }
 
         // Drop everything except the one sample of look-behind we still need.
-        auto drop = (size_t) position - 1;
+        // With a large rate ratio the position can run past the end, so
+        // never drop more than we have.
+        auto drop = juce::jmin ((size_t) position - 1, history.size() - 1);
         history.erase (history.begin(), history.begin() + (long) drop);
         position -= (double) drop;
         return produced;

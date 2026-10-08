@@ -136,6 +136,11 @@ private:
         uint32_t lastSequence = 0;
         int lastNumFrames = 0;
         bool haveSequence = false;
+
+        // Stop the receive thread before any member is destroyed: it writes
+        // senderIp etc., which would otherwise be freed while it still runs
+        // (members are destroyed in reverse order, after `receiver`'s).
+        ~InputRouteRuntime() { receiver.reset(); }
     };
 
     void onPacketReceived (InputRouteRuntime& runtime, const void* data, int numBytes, const juce::String& senderIp);
